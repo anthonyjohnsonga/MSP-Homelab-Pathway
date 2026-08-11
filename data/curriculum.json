@@ -1,0 +1,1448 @@
+{
+  "schemaVersion": 2,
+  "title": "52 Weeks, 52 Technologies — Sysadmin / MSP Track",
+  "client": {
+    "name": "Northgate Legal",
+    "staff": 20,
+    "sites": 2,
+    "description": "Fictional 20-person law firm the entire year builds for"
+  },
+  "lab": {
+    "model": "hybrid",
+    "localHost": "always-on box: hypervisor, DC, file server, Linux utility server, single-node k8s",
+    "cloud": "Azure on MSDN credits + AWS free tier, torn down between labs",
+    "targetSpec": "8+ cores, 64 GB RAM, 1 TB NVMe"
+  },
+  "repo": "msp-lab",
+  "startDate": "2026-08-10",
+  "endDate": "2027-08-08",
+  "phases": [
+    "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+    "Phase 2 — Working Like a Tech (Weeks 12–17)",
+    "Phase 3 — Enterprise Identity and Cloud (Weeks 18–21)",
+    "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+    "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+    "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+    "Phase 7 — Operations and Resilience (Weeks 44–47)",
+    "Phase 8 — Applied AI (Weeks 48–52)"
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "topic": "Computer Hardware Fundamentals",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "What is a CPU (cores, threads, clock, cache)",
+        "Storage (HDD vs SSD vs NVMe, interfaces, IOPS)",
+        "RAM (capacity, speed, ECC, paging)",
+        "UEFI (vs legacy BIOS, Secure Boot, TPM)",
+        "Boot sequences (POST → firmware → bootloader → kernel)"
+      ],
+      "lab": "Open a machine's UEFI, document its boot order, then boot a live USB.",
+      "startDate": "2026-08-10",
+      "endDate": "2026-08-16",
+      "artifact": "Spec and acquire the lab box; `docs/lab/hardware.md` with boot order and firmware settings",
+      "dependsOn": [],
+      "tooling": {
+        "standsUp": "The lab host itself",
+        "freeOption": "Existing spare PC; UEFI/TPM config",
+        "trial": null,
+        "paidFallback": "Refurb mini PC, RAM/NVMe upgrade"
+      }
+    },
+    {
+      "week": 2,
+      "topic": "Operating System Fundamentals",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Processes (PIDs, parent/child, memory space)",
+        "Systems (kernel vs userland, system calls, scheduling)",
+        "Services (daemons, startup types, dependencies)",
+        "Logs (where they live, log levels, rotation)"
+      ],
+      "lab": "Trace one running service end-to-end: its process, its config, its log output.",
+      "startDate": "2026-08-17",
+      "endDate": "2026-08-23",
+      "artifact": "`docs/notes/os-service-trace.md` — one service traced from process to log on the lab box",
+      "dependsOn": [
+        1
+      ],
+      "tooling": {
+        "standsUp": "Nothing new — study on the host",
+        "freeOption": "Any installed OS",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 3,
+      "topic": "Windows 11 / Windows Administration",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Users (local vs domain vs Entra, profiles, UAC)",
+        "Groups (local groups, built-in roles, nesting)",
+        "Permissions (NTFS, share, effective access, ownership)",
+        "Event Viewer (channels, event IDs worth knowing, custom views)",
+        "Services (startup types, dependencies, recovery actions)",
+        "Device Manager (drivers, hidden devices, rollback)",
+        "Basic Windows troubleshooting (safe mode, sfc/DISM, msconfig, Task Manager, Reliability Monitor)",
+        "ncpa.cpl and network reset (adapter properties, IP config, winsock/TCP-IP reset)"
+      ],
+      "lab": "Break networking on a test VM three ways (bad static IP, disabled adapter, corrupt winsock) and fix each from a command line only.",
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-30",
+      "artifact": "First client VM `NG-WS01`; `docs/runbooks/windows-network-reset.md`",
+      "dependsOn": [
+        1
+      ],
+      "tooling": {
+        "standsUp": "First Windows client VM",
+        "freeOption": "Windows 11 Enterprise 90-day eval, or MSDN key",
+        "trial": {
+          "name": "Windows 11 Enterprise evaluation",
+          "duration": "90 days",
+          "eligibility": "No purchase required. Not renewable — rebuild or use an MSDN key when it lapses.",
+          "url": "https://www.microsoft.com/en-us/evalcenter/evaluate-windows-11-enterprise",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Windows 11 Pro retail"
+      }
+    },
+    {
+      "week": 4,
+      "topic": "Linux Fundamentals",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Files (filesystem hierarchy, navigation, viewing/editing, redirection)",
+        "Permissions (rwx, owner/group/other, chmod, chown, sudo)",
+        "Packages (apt/dnf, repos, installing, updating, removing)",
+        "SSH (keys vs passwords, config, copying files with scp)"
+      ],
+      "lab": "Stand up a Linux VM, lock down SSH to key-only auth, install a package, and fix a permissions problem you create on purpose.",
+      "startDate": "2026-08-31",
+      "endDate": "2026-09-06",
+      "artifact": "`NG-SRV01` Linux VM, SSH key-only; `docs/runbooks/linux-baseline.md`",
+      "dependsOn": [
+        1
+      ],
+      "tooling": {
+        "standsUp": "Linux utility server",
+        "freeOption": "Ubuntu Server or Debian",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 5,
+      "topic": "Network Fundamentals",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "IP addressing (IPv4 structure, public vs private, static vs DHCP)",
+        "Subnets (CIDR, masks, host counts, broadcast)",
+        "Gateways (default gateway, routing off-subnet, common misconfigs)",
+        "Ports (well-known ports, listening vs established)",
+        "TCP/IP (the stack, TCP vs UDP, handshake, encapsulation)"
+      ],
+      "lab": "Subnet a /24 into six usable networks by hand, then prove it works in a lab topology.",
+      "startDate": "2026-09-07",
+      "endDate": "2026-09-13",
+      "artifact": "`docs/lab/ip-plan.md` — mgmt, servers, clients, guest subnets for both sites",
+      "dependsOn": [],
+      "tooling": {
+        "standsUp": "The lab IP plan and virtual networks",
+        "freeOption": "Hypervisor virtual switches",
+        "trial": null,
+        "paidFallback": "Managed switch"
+      }
+    },
+    {
+      "week": 6,
+      "topic": "DNS",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Private DNS",
+        "Public DNS",
+        "DNS records (A, AAAA, CNAME, MX, TXT, SRV, PTR)",
+        "Get a Cloudflare account — buy a domain",
+        "How DNS resolution works (recursive vs iterative, root → TLD → authoritative)",
+        "What caching is (TTLs, resolver cache, client cache, flushing)",
+        "Internal vs public DNS (split-brain, conditional forwarders)",
+        "Troubleshooting DNS (nslookup, dig, Resolve-DnsName)"
+      ],
+      "lab": "Point your new domain's records at something real, then break DNS three different ways and diagnose each.",
+      "startDate": "2026-09-14",
+      "endDate": "2026-09-20",
+      "artifact": "Buy the domain; Cloudflare zone live; `docs/lab/dns-records.md`",
+      "dependsOn": [
+        5
+      ],
+      "tooling": {
+        "standsUp": "Public domain + DNS zone",
+        "freeOption": "Cloudflare free DNS plan",
+        "trial": null,
+        "paidFallback": "Domain registration, $10–15/yr (required)"
+      }
+    },
+    {
+      "week": 7,
+      "topic": "HTTP / HTTPS",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Requests (methods, headers, body)",
+        "Response (headers, body, content types)",
+        "Status codes (2xx, 3xx, 4xx, 5xx and the ones you'll actually see)",
+        "TLS and headers (handshake, certificates, HSTS, security headers)",
+        "What happens when you open a website (DNS → TCP → TLS → HTTP → render)"
+      ],
+      "lab": "Load a site with dev tools open and narrate every step; then inspect its certificate chain.",
+      "startDate": "2026-09-21",
+      "endDate": "2026-09-27",
+      "artifact": "First TLS-served page on the lab domain; `docs/notes/request-lifecycle.md`",
+      "dependsOn": [
+        6
+      ],
+      "tooling": {
+        "standsUp": "First TLS-served page",
+        "freeOption": "Caddy + Let's Encrypt (auto certs)",
+        "trial": null,
+        "paidFallback": "Paid cert (unnecessary)"
+      }
+    },
+    {
+      "week": 8,
+      "topic": "Git and GitHub",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Version control (why, and what problem it solves)",
+        "Repos (init, clone, remotes, .gitignore)",
+        "Commits (staging, messages, history, revert)",
+        "Branches (creating, switching, merging, conflicts)",
+        "Pull requests (review, comments, merge strategies)"
+      ],
+      "lab": "Put every script you own into a GitHub repo with a README, a .gitignore, and no hardcoded secrets.",
+      "startDate": "2026-09-28",
+      "endDate": "2026-10-04",
+      "artifact": "Create `msp-lab` — README, .gitignore, everything above committed",
+      "dependsOn": [],
+      "tooling": {
+        "standsUp": "The `msp-lab` repo",
+        "freeOption": "GitHub free (unlimited private repos)",
+        "trial": null,
+        "paidFallback": "GitHub Pro"
+      }
+    },
+    {
+      "week": 9,
+      "topic": "Command Line Basics",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "CMD (legacy commands, ipconfig, sfc, net use)",
+        "PowerShell (the console, cmdlet naming, help system)",
+        "Terminal navigation (paths, listing, copying, moving, deleting)",
+        "Pipes (chaining commands)",
+        "Redirects (output to file, append, error streams)"
+      ],
+      "lab": "Complete one full workday's routine tasks without touching a GUI.",
+      "startDate": "2026-10-05",
+      "endDate": "2026-10-11",
+      "artifact": "`docs/notes/gui-free-day.md` and a CLI cheat sheet",
+      "dependsOn": [
+        8
+      ],
+      "tooling": {
+        "standsUp": "Terminal tooling",
+        "freeOption": "Windows Terminal, PowerShell 7, bash",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 10,
+      "topic": "PowerShell",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Windows automation (cmdlets, the object pipeline, filtering)",
+        "User/account tasks (create, disable, reset, bulk changes)",
+        "System info (hardware, disks, services, installed software)",
+        "Basic scripts (variables, loops, conditionals, saving and running .ps1)"
+      ],
+      "lab": "Write a script that reports on stale accounts and disables them on approval.",
+      "startDate": "2026-10-12",
+      "endDate": "2026-10-18",
+      "artifact": "`scripts/inventory/Get-Inventory.ps1` → CSV. Strand B begins",
+      "dependsOn": [
+        8
+      ],
+      "tooling": {
+        "standsUp": "Inventory script v1",
+        "freeOption": "PowerShell 7, VS Code",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 11,
+      "topic": "Bash",
+      "phase": "Phase 1 — Foundations and Tooling (Weeks 1–11)",
+      "concepts": [
+        "Linux/macOS automation (shebangs, running scripts, exit codes)",
+        "File operations (find, copy, move, archive, permissions at scale)",
+        "Grep and find patterns (regex basics, searching logs)",
+        "Cron basics (syntax, scheduling, logging, common failures)"
+      ],
+      "lab": "Write a cron-scheduled backup-and-prune script and prove it ran from its own log.",
+      "startDate": "2026-10-19",
+      "endDate": "2026-10-25",
+      "artifact": "`scripts/backup/lab-backup.sh` on cron on NG-SRV01, with its own log",
+      "dependsOn": [
+        4,
+        8
+      ],
+      "tooling": {
+        "standsUp": "Scheduled backup script",
+        "freeOption": "cron on the Linux VM",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 12,
+      "topic": "Markdown and Technical Documentation",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "READMEs (structure, what belongs in one)",
+        "Markdown (headings, lists, tables, code blocks, links, images)",
+        "Runbooks (step-by-step, assumptions, rollback steps)",
+        "SOPs (scope, roles, triggers, review cadence)"
+      ],
+      "lab": "Write a README for your Week 8 repo and a runbook for a task you do from memory today.",
+      "startDate": "2026-10-26",
+      "endDate": "2026-11-01",
+      "artifact": "Full `docs/` structure, SOP template, README rewritten",
+      "dependsOn": [
+        8
+      ],
+      "tooling": {
+        "standsUp": "Docs structure",
+        "freeOption": "VS Code, Obsidian free",
+        "trial": null,
+        "paidFallback": "Obsidian Sync"
+      }
+    },
+    {
+      "week": 13,
+      "topic": "Ticketing Systems and ITIL Basics",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "Incidents (something is broken)",
+        "Requests (something is needed)",
+        "SLAs (response vs resolution, priority matrix)",
+        "Escalation (tiers, when and how, warm handoffs)",
+        "Documentation (ticket notes that a stranger can act on)",
+        "How IT work generally flows (intake → triage → work → resolve → review)"
+      ],
+      "lab": "Rewrite five of your worst-documented closed tickets so a tech with no context could follow them.",
+      "startDate": "2026-11-02",
+      "endDate": "2026-11-08",
+      "artifact": "A helpdesk instance for Northgate; `docs/sop/ticket-flow.md` and 5 seeded tickets",
+      "dependsOn": [
+        12
+      ],
+      "tooling": {
+        "standsUp": "A real helpdesk",
+        "freeOption": "Zammad, osTicket, or GLPI (self-hosted)",
+        "trial": null,
+        "paidFallback": "Freshdesk/HaloPSA free tiers"
+      }
+    },
+    {
+      "week": 14,
+      "topic": "Remote Support Solutions",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "RDP (ports, gateways, session hosts, restrictions)",
+        "SSH (tunneling, jump hosts, key management)",
+        "Screensharing (attended vs unattended, consent, session recording)",
+        "VPN basics (client VPN, split vs full tunnel)",
+        "Safe remote troubleshooting (least privilege, change notes, avoiding lockouts)"
+      ],
+      "lab": "Support a machine end-to-end remotely without a screenshare — RDP and SSH only.",
+      "startDate": "2026-11-09",
+      "endDate": "2026-11-15",
+      "artifact": "Jump host + RDP gateway; `docs/runbooks/remote-access.md`",
+      "dependsOn": [
+        4,
+        5
+      ],
+      "tooling": {
+        "standsUp": "Jump host + remote access",
+        "freeOption": "OpenSSH, RDP, Guacamole, Tailscale free tier",
+        "trial": {
+          "name": "ConnectWise ScreenConnect trial",
+          "duration": "14 days",
+          "eligibility": "Only needed if you want a commercial remote-support tool. Guacamole and Tailscale cover the lab for free.",
+          "url": "https://control.connectwise.com/trial",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "RustDesk self-host, ScreenConnect"
+      }
+    },
+    {
+      "week": 15,
+      "topic": "Virtualization",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "VMware, VirtualBox, Hyper-V — do a lab in all three",
+        "Snapshots (and their dangers)",
+        "Virtual networks (NAT, bridged, host-only, internal)",
+        "Lab environments (nested virtualization, resource planning, templates)"
+      ],
+      "lab": "Build the same two-VM isolated network in all three hypervisors and note what each does better.",
+      "startDate": "2026-11-16",
+      "endDate": "2026-11-22",
+      "artifact": "The permanent hypervisor chosen and rebuilt; VM templates; `docs/lab/hypervisor-comparison.md`",
+      "dependsOn": [
+        1
+      ],
+      "tooling": {
+        "standsUp": "**The permanent hypervisor**",
+        "freeOption": "Proxmox VE (free), Hyper-V (MSDN), VirtualBox, VMware Workstation Pro (free for personal use)",
+        "trial": null,
+        "paidFallback": "vSphere Essentials"
+      }
+    },
+    {
+      "week": 16,
+      "topic": "Basic Scripting with Python",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "Automation (scripts, virtual environments, pip)",
+        "Parse files (CSV, JSON, logs, regex)",
+        "Call APIs (requests, auth headers, handling JSON responses)",
+        "Basics along the way (variables, loops, functions, error handling)"
+      ],
+      "lab": "Script that pulls data from an API, parses it, and writes a CSV report — committed to your repo.",
+      "startDate": "2026-11-23",
+      "endDate": "2026-11-29",
+      "artifact": "`app/inventory/` v1 — Python rewrite emitting JSON",
+      "dependsOn": [
+        10
+      ],
+      "tooling": {
+        "standsUp": "Inventory tool v2",
+        "freeOption": "Python 3, VS Code",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 17,
+      "topic": "Active Directory",
+      "phase": "Phase 2 — Working Like a Tech (Weeks 12–17)",
+      "concepts": [
+        "Domains (structure, DCs, AD-integrated DNS)",
+        "Domain joining (requirements, process, troubleshooting)",
+        "Users (accounts, attributes, lifecycle)",
+        "Groups (security vs distribution, scopes, nesting)",
+        "Permissions (delegation, AGDLP, effective rights)",
+        "Remote access (RSAT, remote management of DCs)"
+      ],
+      "lab": "Build a lab domain, join a client, delegate password resets to a helpdesk group, and prove the delegation works.",
+      "startDate": "2026-11-30",
+      "endDate": "2026-12-06",
+      "artifact": "`NG-DC01` and the domain; NG-WS01 joined; helpdesk delegation",
+      "dependsOn": [
+        15
+      ],
+      "tooling": {
+        "standsUp": "Domain controller",
+        "freeOption": "Windows Server 2022/2025 eval (180 days) or MSDN key; Samba AD as a fallback",
+        "trial": {
+          "name": "Windows Server 2025 evaluation",
+          "duration": "180 days",
+          "eligibility": "No purchase required. Note the expiry in docs/lab/hardware.md — this domain controller has to survive until Week 44.",
+          "url": "https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2025",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Windows Server license"
+      }
+    },
+    {
+      "week": 18,
+      "topic": "Group Policy",
+      "phase": "Phase 3 — Enterprise Identity and Cloud (Weeks 18–21)",
+      "concepts": [
+        "How enterprise environments actually work (domain-joined fleets, standardization, drift)",
+        "How we enforce policy centrally (GPO structure, computer vs user)",
+        "Link order, inheritance, enforcement, blocking",
+        "Security filtering and loopback processing",
+        "gpresult / RSoP troubleshooting"
+      ],
+      "lab": "Deploy a drive map, a security baseline, and a software restriction via GPO; prove precedence.",
+      "startDate": "2026-12-07",
+      "endDate": "2026-12-13",
+      "artifact": "Baseline GPO set exported to `infra/gpo/`",
+      "dependsOn": [
+        17
+      ],
+      "tooling": {
+        "standsUp": "Baseline GPO set",
+        "freeOption": "Built into AD; use CIS/Microsoft Security Baselines (free)",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 19,
+      "topic": "Microsoft Entra ID",
+      "phase": "Phase 3 — Enterprise Identity and Cloud (Weeks 18–21)",
+      "concepts": [
+        "Cloud identity (tenants, cloud-only vs hybrid, Entra Connect)",
+        "Users (accounts, attributes, lifecycle, guests)",
+        "Groups (assigned vs dynamic, group-based licensing)",
+        "MFA (methods, registration, phishing-resistant options)",
+        "Conditional Access (signals, policies, report-only mode)"
+      ],
+      "lab": "Build a dynamic group, enforce MFA through Conditional Access in report-only, review impact, then turn it on.",
+      "startDate": "2026-12-14",
+      "endDate": "2026-12-20",
+      "artifact": "M365 dev tenant on your real domain; dynamic group; MFA via Conditional Access",
+      "dependsOn": [
+        6,
+        17
+      ],
+      "tooling": {
+        "standsUp": "Cloud tenant",
+        "freeOption": "M365 E5 developer tenant (free via MSDN, renews while active)",
+        "trial": {
+          "name": "Microsoft 365 E5 developer tenant",
+          "duration": "Renews continuously while the tenant stays in active use",
+          "eligibility": "Requires an eligible Visual Studio subscription. Two months of inactivity and the tenant is revoked, taking Weeks 19-26 with it.",
+          "url": "https://developer.microsoft.com/en-us/microsoft-365/dev-program",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "M365 Business Premium, ~$22/user/mo"
+      }
+    },
+    {
+      "week": 20,
+      "topic": "Microsoft 365",
+      "phase": "Phase 3 — Enterprise Identity and Cloud (Weeks 18–21)",
+      "concepts": [
+        "Exchange (mailboxes, permissions, basic mail flow)",
+        "Teams (teams vs channels, policies, guest access)",
+        "Licenses (SKUs, assignment, group-based licensing)",
+        "Users (provisioning, offboarding, shared mailbox conversion)",
+        "Security basics (Secure Score, admin roles, service health)"
+      ],
+      "lab": "Run a full onboard and a full offboard in a test tenant and document both as runbooks.",
+      "startDate": "2026-12-21",
+      "endDate": "2026-12-27",
+      "artifact": "Onboard and offboard your three fake staff; both runbooks written",
+      "dependsOn": [
+        19
+      ],
+      "tooling": {
+        "standsUp": "Exchange, Teams, licensing in that tenant",
+        "freeOption": "Same dev tenant",
+        "trial": {
+          "name": "Microsoft 365 E5 developer tenant",
+          "duration": "Same tenant as Week 19",
+          "eligibility": "Already provisioned in Week 19. Keep using it or you lose it.",
+          "url": "https://developer.microsoft.com/en-us/microsoft-365/dev-program",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Same as above"
+      }
+    },
+    {
+      "week": 21,
+      "topic": "IAM Concepts",
+      "phase": "Phase 3 — Enterprise Identity and Cloud (Weeks 18–21)",
+      "concepts": [
+        "Identity (authentication vs authorization, identity sources)",
+        "Roles (RBAC, role assignment, scope)",
+        "Permissions (inheritance, effective permissions, permission creep)",
+        "Least privilege (JIT access, admin tiering, separation of duties)"
+      ],
+      "lab": "Audit admin rights across one environment and produce a least-privilege remediation plan.",
+      "startDate": "2026-12-28",
+      "endDate": "2027-01-03",
+      "artifact": "`docs/security/access-model.md` — roles, tiers, least-privilege plan",
+      "dependsOn": [
+        19,
+        20
+      ],
+      "tooling": {
+        "standsUp": "Access model docs",
+        "freeOption": "—",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 22,
+      "topic": "Authentication Protocols",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "MFA (factors, methods, phishing-resistant options, MFA fatigue attacks)",
+        "OAuth 2.0 (flows, tokens, scopes, consent)",
+        "SAML (assertions, IdP vs SP, federation)",
+        "OIDC (ID tokens, how it builds on OAuth)",
+        "Where each is used, and Kerberos/NTLM/LDAP on the on-prem side"
+      ],
+      "lab": "Federate a test app with Entra ID, then decode the SAML assertion and the OIDC ID token.",
+      "startDate": "2027-01-04",
+      "endDate": "2027-01-10",
+      "artifact": "Federate a test app; `docs/notes/auth-traces.md` with a decoded SAML assertion and ID token",
+      "dependsOn": [
+        19
+      ],
+      "tooling": {
+        "standsUp": "Federated test app",
+        "freeOption": "Entra + a sample SAML/OIDC app; jwt.io to decode",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 23,
+      "topic": "Security Fundamentals",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "CIA triad (confidentiality, integrity, availability)",
+        "Threats (actors, vectors, phishing, ransomware, insider)",
+        "Risk (likelihood × impact, accept/mitigate/transfer/avoid)",
+        "Hardening (baselines, attack surface reduction, secure defaults)",
+        "Patching (why it's the highest-value control)",
+        "Least privilege (admin separation, standing vs just-in-time)"
+      ],
+      "lab": "Threat-model one client environment on one page: assets, threats, existing controls, top three gaps.",
+      "startDate": "2027-01-11",
+      "endDate": "2027-01-17",
+      "artifact": "`docs/security/threat-model.md` for Northgate — assets, threats, controls, top 3 gaps",
+      "dependsOn": [
+        21
+      ],
+      "tooling": {
+        "standsUp": "Threat model",
+        "freeOption": "CIS Controls v8 (free), NIST CSF (free)",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 24,
+      "topic": "Endpoint Security",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Microsoft Defender (AV, cloud protection, tamper protection)",
+        "EDR basics (telemetry, detections, response actions)",
+        "Alerts (triage, severity, false positives, tuning)",
+        "Device posture (compliance, encryption, firewall, ASR rules)",
+        "Common endpoint problems (persistence, unwanted software, exclusion abuse)"
+      ],
+      "lab": "Trigger a benign detection, triage it end-to-end, and write the tuning exclusion correctly.",
+      "startDate": "2027-01-18",
+      "endDate": "2027-01-24",
+      "artifact": "Defender onboarded across the fleet; one tuned exclusion documented",
+      "dependsOn": [
+        20,
+        23
+      ],
+      "tooling": {
+        "standsUp": "EDR across the fleet",
+        "freeOption": "Defender for Endpoint in the E5 dev tenant",
+        "trial": {
+          "name": "Microsoft Defender for Business trial",
+          "duration": "30 days",
+          "eligibility": "Only needed if the E5 developer tenant is unavailable — E5 already includes Defender for Endpoint.",
+          "url": "https://www.microsoft.com/en-us/security/business/endpoint-security/microsoft-defender-business",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Defender for Business, ~$3/user/mo"
+      }
+    },
+    {
+      "week": 25,
+      "topic": "Vulnerability Management",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Scanning (authenticated vs unauthenticated, agent vs network)",
+        "CVEs (structure, sources, vendor advisories)",
+        "Severity (CVSS base vs environmental)",
+        "Patch priority (EPSS, exploited-in-the-wild, KEV catalog)",
+        "Remediation tracking (SLAs, exceptions, reporting)"
+      ],
+      "lab": "Scan a lab network and produce a prioritized one-page remediation report using EPSS, not just CVSS.",
+      "startDate": "2027-01-25",
+      "endDate": "2027-01-31",
+      "artifact": "`docs/security/vuln-report-01.md` — prioritized by EPSS, not just CVSS",
+      "dependsOn": [
+        24
+      ],
+      "tooling": {
+        "standsUp": "Scanner",
+        "freeOption": "Greenbone/OpenVAS CE, or Nessus Essentials (16 IPs)",
+        "trial": {
+          "name": "Nessus Professional trial",
+          "duration": "7 days",
+          "eligibility": "Short. Nessus Essentials is free permanently for 16 IPs and is the better path for a 20-device lab.",
+          "url": "https://www.tenable.com/products/nessus/nessus-professional/evaluate",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Nessus Pro (~$4k — skip)"
+      }
+    },
+    {
+      "week": 26,
+      "topic": "SIEM Basics",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Logging (sources, collection, retention, normalization)",
+        "Alerting (rules, thresholds, alert fatigue)",
+        "Correlation (linking events across sources)",
+        "Investigations (timeline building, pivoting, evidence)",
+        "Microsoft Sentinel and KQL basics"
+      ],
+      "lab": "Ingest sign-in logs and write a KQL rule for impossible-travel, then investigate a hit end-to-end.",
+      "startDate": "2027-02-01",
+      "endDate": "2027-02-07",
+      "artifact": "Sign-in logs ingested; KQL rule committed to `infra/siem/`",
+      "dependsOn": [
+        19
+      ],
+      "tooling": {
+        "standsUp": "Log analytics + rules",
+        "freeOption": "Wazuh (free) or Sentinel on MSDN credits",
+        "trial": {
+          "name": "Microsoft Sentinel free trial",
+          "duration": "31 days of free ingestion, then billed per GB",
+          "eligibility": "Watch ingest volume — this is the easiest way to burn Azure credits by accident. Wazuh is free indefinitely.",
+          "url": "https://azure.microsoft.com/en-us/products/microsoft-sentinel",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Sentinel at retail ingest rates"
+      }
+    },
+    {
+      "week": 27,
+      "topic": "Cloud Fundamentals",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Regions (geography, latency, data residency)",
+        "Availability (zones, SLAs, redundancy models)",
+        "Shared responsibility (what the provider secures vs what you secure)",
+        "Pricing (consumption, reserved, egress, the surprise line items)",
+        "Core services (compute, storage, network, identity)"
+      ],
+      "lab": "Price the same small workload in Azure and AWS and explain the difference in one page.",
+      "startDate": "2027-02-08",
+      "endDate": "2027-02-14",
+      "artifact": "`docs/cloud/pricing-comparison.md` — same workload, Azure vs AWS",
+      "dependsOn": [],
+      "tooling": {
+        "standsUp": "Accounts and budgets",
+        "freeOption": "Azure free account, AWS free tier",
+        "trial": {
+          "name": "Azure free account",
+          "duration": "30 days of credit, plus 12 months of free-tier services",
+          "eligibility": "An MSDN subscription gives recurring monthly credit instead, which is worth more across a full year.",
+          "url": "https://azure.microsoft.com/en-us/free/",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 28,
+      "topic": "Azure Fundamentals",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Resource groups (scope, tagging, lifecycle)",
+        "VMs (sizing, disks, availability options)",
+        "Networking (VNets, subnets, NSGs, public IPs)",
+        "Identity (Entra ID, RBAC, managed identities)",
+        "Cost management and budgets"
+      ],
+      "lab": "Deploy a VM into a scoped resource group with RBAC, NSG rules, and a budget alert.",
+      "startDate": "2027-02-15",
+      "endDate": "2027-02-21",
+      "artifact": "Northgate's Azure footprint — RG, VM, NSG, RBAC, and the budget alert",
+      "dependsOn": [
+        27
+      ],
+      "tooling": {
+        "standsUp": "Azure footprint",
+        "freeOption": "MSDN credits + budget alerts",
+        "trial": {
+          "name": "Azure free account",
+          "duration": "30 days of credit, plus always-free services",
+          "eligibility": "Set the budget alert before deploying anything. This is the week the cost guardrails go in and never come out.",
+          "url": "https://azure.microsoft.com/en-us/free/",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Pay-as-you-go"
+      }
+    },
+    {
+      "week": 29,
+      "topic": "AWS Fundamentals",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "EC2 (instances, AMIs, key pairs, security groups)",
+        "S3 (buckets, storage classes, public access blocks)",
+        "IAM (users, roles, policies, least privilege)",
+        "VPC basics (subnets, internet/NAT gateways, route tables)",
+        "VPN basics (site-to-site to a VPC)"
+      ],
+      "lab": "Launch an EC2 instance in a private subnet, reach it via a bastion, and store output in S3 with public access blocked.",
+      "startDate": "2027-02-22",
+      "endDate": "2027-02-28",
+      "artifact": "EC2 in a private subnet + S3, reached via bastion; comparison notes",
+      "dependsOn": [
+        27
+      ],
+      "tooling": {
+        "standsUp": "EC2, S3, VPC",
+        "freeOption": "AWS free tier (12 months, t2/t3.micro)",
+        "trial": {
+          "name": "AWS Free Tier",
+          "duration": "12 months from account creation",
+          "eligibility": "Covers t2/t3.micro EC2 and a small S3 allowance. Check egress pricing before moving data.",
+          "url": "https://aws.amazon.com/free/",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "~$5/mo beyond free tier"
+      }
+    },
+    {
+      "week": 30,
+      "topic": "Cloud Networking",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "VNets and VPCs",
+        "Subnets (public vs private, sizing, segmentation)",
+        "NSGs and security groups (stateful rules, ordering, defaults)",
+        "Routing (route tables, gateways, peering, hub-and-spoke)",
+        "Private vs public access (private endpoints, service endpoints, no-public-IP designs)"
+      ],
+      "lab": "Build a hub-and-spoke network where the app tier has zero inbound internet path and still reaches updates.",
+      "startDate": "2027-03-01",
+      "endDate": "2027-03-07",
+      "artifact": "Hub-and-spoke where the app tier has no inbound path",
+      "dependsOn": [
+        28
+      ],
+      "tooling": {
+        "standsUp": "Hub-and-spoke",
+        "freeOption": "Same free/credit path",
+        "trial": {
+          "name": "AWS Free Tier",
+          "duration": "Same 12-month window opened in Week 29",
+          "eligibility": "Hub-and-spoke fits inside the free tier if you tear down afterwards.",
+          "url": "https://aws.amazon.com/free/",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 31,
+      "topic": "Docker",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Containers (vs VMs, lifecycle, when they're the wrong answer)",
+        "Images (Dockerfiles, layers, tags, registries)",
+        "Volumes (persistence, bind mounts)",
+        "Ports (publishing, networking modes)",
+        "Registries and image hygiene (tags, size, base images)"
+      ],
+      "lab": "Containerize your Week 16 Python tool with a volume and a published port, and run it from a single `docker run`.",
+      "startDate": "2027-03-08",
+      "endDate": "2027-03-14",
+      "artifact": "`app/inventory/Dockerfile` — the tool, containerized",
+      "dependsOn": [
+        16
+      ],
+      "tooling": {
+        "standsUp": "Containerized app",
+        "freeOption": "Docker CE on Linux, or Podman",
+        "trial": null,
+        "paidFallback": "Docker Desktop business licence"
+      }
+    },
+    {
+      "week": 32,
+      "topic": "Docker Compose",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "Run multi-service apps locally (services, dependencies, startup order)",
+        "Compose file structure (services, networks, volumes, env files)",
+        "Networking between containers (service names as DNS)",
+        "Persistent data and bind mounts across a stack",
+        "Rebuilds, logs, and teardown (`up`, `down`, `logs`, `ps`)"
+      ],
+      "lab": "Stand up a three-service stack (app + database + reverse proxy) from one Compose file, then destroy and rebuild it with data intact.",
+      "startDate": "2027-03-15",
+      "endDate": "2027-03-21",
+      "artifact": "`docker-compose.yml` — app + database + reverse proxy",
+      "dependsOn": [
+        31
+      ],
+      "tooling": {
+        "standsUp": "Multi-service stack",
+        "freeOption": "Compose v2 (free)",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 33,
+      "topic": "APIs",
+      "phase": "Phase 4 — Security, Cloud, and Modern Tooling (Weeks 22–33)",
+      "concepts": [
+        "REST (resources, statelessness, JSON)",
+        "Endpoints (paths, query parameters, versioning)",
+        "Methods (GET, POST, PUT, PATCH, DELETE and what each should do)",
+        "Auth (API keys, bearer tokens, OAuth flows)",
+        "Postman/curl (building requests, headers, collections, saving and sharing calls)",
+        "Reading docs, pagination, rate limits, error handling"
+      ],
+      "lab": "Pull data from your RMM or PSA API — first in Postman, then as a curl one-liner — page through the full result set, and reconcile it against AD.",
+      "startDate": "2027-03-22",
+      "endDate": "2027-03-28",
+      "artifact": "Inventory tool reads the helpdesk/RMM API; Postman collection in repo",
+      "dependsOn": [
+        13,
+        16
+      ],
+      "tooling": {
+        "standsUp": "API integration",
+        "freeOption": "Postman free tier, curl, Bruno (open source)",
+        "trial": null,
+        "paidFallback": "Postman paid"
+      }
+    },
+    {
+      "week": 34,
+      "topic": "JSON and YAML",
+      "phase": "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+      "concepts": [
+        "Config files (syntax, indentation traps, comments, validation)",
+        "API payloads (nesting, arrays, parsing, jq and ConvertFrom-Json)",
+        "Cloud/devops tooling (where each format shows up: Compose, Actions, Terraform vars, Kubernetes)",
+        "Converting between them and linting before you ship"
+      ],
+      "lab": "Take a working config, break it four ways (tabs, bad nesting, missing quotes, wrong type), and fix each from the error message alone.",
+      "startDate": "2027-03-29",
+      "endDate": "2027-04-04",
+      "artifact": "App config schema + linting; every config in the repo validates",
+      "dependsOn": [
+        32
+      ],
+      "tooling": {
+        "standsUp": "Config schemas",
+        "freeOption": "jq, yq, VS Code extensions",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 35,
+      "topic": "SQL",
+      "phase": "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+      "concepts": [
+        "SELECT (columns, aliases, filtering, ordering, limits)",
+        "JOIN (inner, left, and why row counts explode)",
+        "WHERE (operators, NULL handling, grouping with HAVING)",
+        "Indexes (what they cost, why queries crawl without them)",
+        "Basic database thinking (normalization, keys, transactions)"
+      ],
+      "lab": "Restore a sample database, answer five real questions with queries, then add an index and measure the difference.",
+      "startDate": "2027-04-05",
+      "endDate": "2027-04-11",
+      "artifact": "Database schema and history in `app/db/` — the tool stops overwriting itself",
+      "dependsOn": [
+        32
+      ],
+      "tooling": {
+        "standsUp": "Database with history",
+        "freeOption": "PostgreSQL or SQL Server Developer Edition (free)",
+        "trial": {
+          "name": "SQL Server 2022 evaluation",
+          "duration": "180 days",
+          "eligibility": "Only if you specifically want SQL Server. Developer Edition is free forever for non-production, and PostgreSQL costs nothing at all.",
+          "url": "https://www.microsoft.com/en-us/evalcenter/evaluate-sql-server-2022",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Azure SQL"
+      }
+    },
+    {
+      "week": 36,
+      "topic": "Infrastructure as Code",
+      "phase": "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+      "concepts": [
+        "Terraform (providers, resources, variables, outputs)",
+        "Infrastructure as code (declarative vs imperative, why drift matters)",
+        "Define cloud resources in files (plan, apply, destroy)",
+        "State (where it lives, locking, never editing by hand)",
+        "Modules and reuse"
+      ],
+      "lab": "Redeploy your Week 28/30 cloud network entirely from code, destroy it, and rebuild it identically.",
+      "startDate": "2027-04-12",
+      "endDate": "2027-04-18",
+      "artifact": "`infra/terraform/` rebuilds the entire cloud footprint from scratch",
+      "dependsOn": [
+        28,
+        30
+      ],
+      "tooling": {
+        "standsUp": "Terraform for the cloud footprint",
+        "freeOption": "OpenTofu or Terraform CE",
+        "trial": null,
+        "paidFallback": "Terraform Cloud teams"
+      }
+    },
+    {
+      "week": 37,
+      "topic": "Secrets Management",
+      "phase": "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+      "concepts": [
+        "Why secrets never belong in code or config files",
+        "Vaults (Azure Key Vault, AWS Secrets Manager, HashiCorp Vault)",
+        "Environment variables and .env hygiene",
+        "Managed identities and workload identity (no credentials at all)",
+        "Rotation, expiry, and what to do after a leak"
+      ],
+      "lab": "Refactor one script and one Terraform config to pull every secret from a vault, then scan your Git history for anything you've already leaked.",
+      "startDate": "2027-04-19",
+      "endDate": "2027-04-25",
+      "artifact": "Every secret moved to a vault; git history scanned and cleaned",
+      "dependsOn": [
+        36
+      ],
+      "tooling": {
+        "standsUp": "Vault",
+        "freeOption": "Azure Key Vault (pennies on credits), OpenBao/Vault OSS, Bitwarden free",
+        "trial": null,
+        "paidFallback": "HashiCorp Vault Enterprise"
+      }
+    },
+    {
+      "week": 38,
+      "topic": "CI/CD",
+      "phase": "Phase 5 — Data and Infrastructure as Code (Weeks 34–38)",
+      "concepts": [
+        "GitHub Actions (workflows, triggers, runners, jobs)",
+        "How pipelines work (stages, artifacts, caching)",
+        "Automated testing (linting scripts, unit tests, failing fast)",
+        "Deployment basics (environments, approvals, rollback)",
+        "Secrets in pipelines"
+      ],
+      "lab": "Build a pipeline that lints and tests your scripts on every pull request and deploys on merge to main.",
+      "startDate": "2027-04-26",
+      "endDate": "2027-05-02",
+      "artifact": "`.github/workflows/ci.yml` — lint and test on PR, deploy on merge",
+      "dependsOn": [
+        8,
+        37
+      ],
+      "tooling": {
+        "standsUp": "Pipelines",
+        "freeOption": "GitHub Actions free tier (2,000 min/mo)",
+        "trial": null,
+        "paidFallback": "Actions minutes overage"
+      }
+    },
+    {
+      "week": 39,
+      "topic": "Kubernetes Basics",
+      "phase": "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+      "concepts": [
+        "Pods (containers, lifecycle, why you rarely create them directly)",
+        "Deployments (replicas, rollouts, rollbacks)",
+        "Services (ClusterIP, NodePort, LoadBalancer, service discovery)",
+        "Ingress (routing, TLS, controllers)",
+        "kubectl fundamentals and reading cluster state"
+      ],
+      "lab": "Deploy your Week 32 Compose stack to a local cluster (k3s/kind/Docker Desktop) with an Ingress and working TLS.",
+      "startDate": "2027-05-03",
+      "endDate": "2027-05-09",
+      "artifact": "Compose stack deployed to k3s/AKS with Ingress and working TLS",
+      "dependsOn": [
+        32,
+        38
+      ],
+      "tooling": {
+        "standsUp": "Cluster",
+        "freeOption": "k3s or kind on the lab box (free)",
+        "trial": null,
+        "paidFallback": "AKS/EKS node costs"
+      }
+    },
+    {
+      "week": 40,
+      "topic": "Web Servers",
+      "phase": "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+      "concepts": [
+        "Nginx (config structure, server blocks, static vs proxied)",
+        "Caddy (automatic TLS, minimal config)",
+        "Apache (where you'll still meet it, .htaccess, modules)",
+        "Reverse proxies (proxy_pass, headers, X-Forwarded-For)",
+        "TLS and serving apps (certs, renewal, HTTP→HTTPS redirects)"
+      ],
+      "lab": "Serve the same app behind all three, then compare configs and pick a default for your own stack.",
+      "startDate": "2027-05-10",
+      "endDate": "2027-05-16",
+      "artifact": "Same app behind nginx, Caddy, and Apache; chosen config committed",
+      "dependsOn": [
+        39
+      ],
+      "tooling": {
+        "standsUp": "nginx / Caddy / Apache",
+        "freeOption": "All open source",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    },
+    {
+      "week": 41,
+      "topic": "Load Balancers and Reverse Proxies",
+      "phase": "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+      "concepts": [
+        "Traffic routing (round robin, least connections, sticky sessions)",
+        "High availability (health checks, failover, draining nodes)",
+        "SSL/TLS termination (at the edge vs end-to-end, re-encryption)",
+        "Layer 4 vs Layer 7 balancing",
+        "Cloud load balancers vs self-hosted (HAProxy, Nginx, Azure/AWS LB)"
+      ],
+      "lab": "Put two app instances behind a load balancer with health checks, kill one mid-request, and prove no user-visible failure.",
+      "startDate": "2027-05-17",
+      "endDate": "2027-05-23",
+      "artifact": "Two replicas, health checks, one killed mid-request with no user impact",
+      "dependsOn": [
+        40
+      ],
+      "tooling": {
+        "standsUp": "LB with health checks",
+        "freeOption": "HAProxy, nginx, Traefik",
+        "trial": null,
+        "paidFallback": "Cloud LB (~$18/mo — tear down)"
+      }
+    },
+    {
+      "week": 42,
+      "topic": "Monitoring",
+      "phase": "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+      "concepts": [
+        "Metrics vs telemetry (what each answers)",
+        "Uptime checks (synthetic, external, from where)",
+        "CPU, memory, disk (what \"normal\" looks like, saturation vs utilization)",
+        "Dashboards (signal vs decoration, who reads them)",
+        "Alerting (thresholds vs baselines, severity, on-call routing)"
+      ],
+      "lab": "Instrument one host and one app, build a single dashboard someone could act on, and set three alerts that would have caught real past incidents.",
+      "startDate": "2027-05-24",
+      "endDate": "2027-05-30",
+      "artifact": "One actionable dashboard + three alerts in `infra/monitoring/`",
+      "dependsOn": [
+        41
+      ],
+      "tooling": {
+        "standsUp": "Dashboards and alerts",
+        "freeOption": "Prometheus + Grafana, Uptime Kuma, Zabbix",
+        "trial": null,
+        "paidFallback": "Grafana Cloud free tier is generous"
+      }
+    },
+    {
+      "week": 43,
+      "topic": "Logging",
+      "phase": "Phase 6 — Platform and Application Infrastructure (Weeks 39–43)",
+      "concepts": [
+        "Application logs (levels, structured logging, correlation IDs)",
+        "System logs (Event Log, journald, syslog)",
+        "Centralized logging (shippers, retention, cost)",
+        "Gathering logs (agents, forwarders, what to collect and what to skip)",
+        "Troubleshooting with evidence (timelines, not guesses)"
+      ],
+      "lab": "Ship logs from a Windows host, a Linux host, and an app into one place, then reconstruct an incident timeline from them alone.",
+      "startDate": "2027-05-31",
+      "endDate": "2027-06-06",
+      "artifact": "Windows, Linux, and app logs centralized; an incident timeline rebuilt from them",
+      "dependsOn": [
+        42
+      ],
+      "tooling": {
+        "standsUp": "Central log stack",
+        "freeOption": "Grafana Loki, Graylog OSS, Wazuh",
+        "trial": {
+          "name": "Elastic Cloud trial",
+          "duration": "14 days",
+          "eligibility": "Only if you want managed Elastic. Loki and Graylog OSS are free and run on the lab box.",
+          "url": "https://cloud.elastic.co/registration",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Elastic Cloud"
+      }
+    },
+    {
+      "week": 44,
+      "topic": "Backups and Disaster Recovery",
+      "phase": "Phase 7 — Operations and Resilience (Weeks 44–47)",
+      "concepts": [
+        "RPO and RTO (what the business actually agreed to)",
+        "Snapshots (and why a snapshot is not a backup)",
+        "Restore testing (the only proof a backup works)",
+        "3-2-1-1-0, retention, and immutability",
+        "Runbooks, failover, and outage communications"
+      ],
+      "lab": "Perform a bare-metal restore and time it. That number is your real RTO — then write the DR runbook around it.",
+      "startDate": "2027-06-07",
+      "endDate": "2027-06-13",
+      "artifact": "Restore NG-DC01 for real. Measured RTO in `docs/runbooks/dr-northgate.md`",
+      "dependsOn": [
+        17,
+        43
+      ],
+      "tooling": {
+        "standsUp": "Backup + real restore",
+        "freeOption": "Veeam Community Edition (10 workloads), Proxmox Backup Server, Restic",
+        "trial": {
+          "name": "Veeam Backup & Replication trial",
+          "duration": "30 days of full functionality",
+          "eligibility": "Community Edition is free permanently for 10 workloads, which is more than this lab needs.",
+          "url": "https://www.veeam.com/products/free/backup-recovery.html",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Veeam Essentials"
+      }
+    },
+    {
+      "week": 45,
+      "topic": "Ansible",
+      "phase": "Phase 7 — Operations and Resilience (Weeks 44–47)",
+      "concepts": [
+        "Configuration management (desired state, idempotency)",
+        "Inventories, playbooks, roles",
+        "Repeatable server setup (from bare OS to serving traffic)",
+        "Variables, templates, and secrets (ansible-vault)",
+        "Ad-hoc commands vs playbooks"
+      ],
+      "lab": "Build a playbook that takes a fresh VM to a fully configured web server, then run it twice and prove nothing changed the second time.",
+      "startDate": "2027-06-14",
+      "endDate": "2027-06-20",
+      "artifact": "`infra/ansible/` builds `NG-SRV02` from bare OS; run twice, zero changes",
+      "dependsOn": [
+        4,
+        36
+      ],
+      "tooling": {
+        "standsUp": "Config management",
+        "freeOption": "Ansible core (free)",
+        "trial": {
+          "name": "Red Hat Ansible Automation Platform trial",
+          "duration": "60 days",
+          "eligibility": "Ansible core is free and complete for this week. The trial only matters if you want AAP specifically.",
+          "url": "https://www.redhat.com/en/technologies/management/ansible/trial",
+          "checkedOn": "2026-08-10"
+        },
+        "paidFallback": "Ansible Automation Platform"
+      }
+    },
+    {
+      "week": 46,
+      "topic": "Basic System Design",
+      "phase": "Phase 7 — Operations and Resilience (Weeks 44–47)",
+      "concepts": [
+        "Apps (tiers, stateless vs stateful, scaling)",
+        "Networks (segmentation, ingress/egress, latency)",
+        "Databases (read replicas, connection limits, backup implications)",
+        "Caches (what to cache, invalidation, when caching hides bugs)",
+        "Queues (decoupling, retries, dead-letter handling)"
+      ],
+      "lab": "Design a small multi-tier system on one page — components, data flow, failure modes — then explain how each piece is monitored and backed up.",
+      "startDate": "2027-06-21",
+      "endDate": "2027-06-27",
+      "artifact": "`docs/design/northgate-architecture.md` — diagram, data flow, failure modes",
+      "dependsOn": [
+        43,
+        44
+      ],
+      "tooling": {
+        "standsUp": "Architecture diagram",
+        "freeOption": "draw.io, Excalidraw, Mermaid",
+        "trial": null,
+        "paidFallback": "Lucidchart"
+      }
+    },
+    {
+      "week": 47,
+      "topic": "LLM Fundamentals",
+      "phase": "Phase 7 — Operations and Resilience (Weeks 44–47)",
+      "concepts": [
+        "Tokens (what they are, why they cost)",
+        "Context windows (limits, chunking, what falls out)",
+        "Models (sizes, families, tradeoffs, hosted vs local)",
+        "Inference (temperature, latency, streaming, determinism)",
+        "Limitations (hallucination, cutoffs, prompt injection, data privacy)"
+      ],
+      "lab": "Run the same task against a hosted and a local model, measure token cost and quality, and write your team's AI usage policy from what you learn.",
+      "startDate": "2027-06-28",
+      "endDate": "2027-07-04",
+      "artifact": "`docs/ai/model-eval.md` (hosted vs local, token cost) and the AI usage policy",
+      "dependsOn": [],
+      "tooling": {
+        "standsUp": "Local + hosted models",
+        "freeOption": "Ollama (local, free)",
+        "trial": null,
+        "paidFallback": "~$5–10 in API credits for comparison"
+      }
+    },
+    {
+      "week": 48,
+      "topic": "Prompt Engineering",
+      "phase": "Phase 8 — Applied AI (Weeks 48–52)",
+      "concepts": [
+        "Clear instructions (specificity, format, constraints, role)",
+        "Examples (few-shot, showing the output shape you want)",
+        "Managing the context window (what to include, what to summarize, what to drop)",
+        "Structured output (JSON schemas, XML tags, parseable responses)",
+        "Evaluating prompts (testing variations, catching silent failures)"
+      ],
+      "lab": "Take one recurring task you do by hand, write a prompt that does it, then improve it across five test cases until output is consistent.",
+      "startDate": "2027-07-05",
+      "endDate": "2027-07-11",
+      "artifact": "`ai/prompts/` — tested prompts with eval cases, not one-offs",
+      "dependsOn": [
+        47
+      ],
+      "tooling": {
+        "standsUp": "Prompt library + evals",
+        "freeOption": "Any API free credits; local models",
+        "trial": null,
+        "paidFallback": "~$5 in API calls"
+      }
+    },
+    {
+      "week": 49,
+      "topic": "RAG (Retrieval-Augmented Generation)",
+      "phase": "Phase 8 — Applied AI (Weeks 48–52)",
+      "concepts": [
+        "Letting AI answer from your docs and data",
+        "The pipeline (ingest → chunk → index → retrieve → generate)",
+        "Chunking strategy (size, overlap, why it makes or breaks quality)",
+        "Grounding and citations (making answers traceable)",
+        "Failure modes (missing context, stale data, confident wrong answers)"
+      ],
+      "lab": "Build a RAG bot over your Week 12 runbooks and SOPs, then test it on ten real questions and log where it fails.",
+      "startDate": "2027-07-12",
+      "endDate": "2027-07-18",
+      "artifact": "`ai/rag/` indexed over `docs/` — your own year, queryable. Ten test questions logged",
+      "dependsOn": [
+        12,
+        48
+      ],
+      "tooling": {
+        "standsUp": "RAG over your own docs",
+        "freeOption": "LangChain/LlamaIndex + Ollama embeddings",
+        "trial": null,
+        "paidFallback": "Hosted embedding API, a few dollars"
+      }
+    },
+    {
+      "week": 50,
+      "topic": "Vector Databases and Embeddings",
+      "phase": "Phase 8 — Applied AI (Weeks 48–52)",
+      "concepts": [
+        "How semantic search works (meaning vs keyword matching)",
+        "Embeddings (vectors, dimensions, similarity metrics)",
+        "Vector stores (pgvector, Chroma, Pinecone, Azure AI Search)",
+        "Indexes, metadata filters, and hybrid search",
+        "How AI apps use it (retrieval, dedup, classification, clustering)"
+      ],
+      "lab": "Embed your documentation set, run semantic vs keyword search on the same queries, and measure which finds the right doc more often.",
+      "startDate": "2027-07-19",
+      "endDate": "2027-07-25",
+      "artifact": "Semantic vs keyword benchmark; hybrid search added to the RAG index",
+      "dependsOn": [
+        49
+      ],
+      "tooling": {
+        "standsUp": "Vector store",
+        "freeOption": "pgvector (on your Week 35 Postgres), Chroma, Qdrant",
+        "trial": null,
+        "paidFallback": "Pinecone paid tier"
+      }
+    },
+    {
+      "week": 51,
+      "topic": "AI Agents",
+      "phase": "Phase 8 — Applied AI (Weeks 48–52)",
+      "concepts": [
+        "Tools (function calling, giving a model real capabilities)",
+        "Memory (short-term context vs persistent state)",
+        "Planning (decomposition, multi-step reasoning, reflection)",
+        "Task management (loops, checkpoints, knowing when to stop)",
+        "Guardrails (permissions, cost limits, human approval gates)"
+      ],
+      "lab": "Build an agent that triages a ticket queue: reads tickets, classifies them, drafts responses, and escalates what it can't handle.",
+      "startDate": "2027-07-26",
+      "endDate": "2027-08-01",
+      "artifact": "`ai/agent/` triages the Week 13 ticket queue with approval gates",
+      "dependsOn": [
+        13,
+        50
+      ],
+      "tooling": {
+        "standsUp": "Ticket-triage agent",
+        "freeOption": "Open-source agent frameworks + local model",
+        "trial": null,
+        "paidFallback": "Hosted model API, ~$10"
+      }
+    },
+    {
+      "week": 52,
+      "topic": "MCP and Agent Tool Integrations",
+      "phase": "Phase 8 — Applied AI (Weeks 48–52)",
+      "concepts": [
+        "Connecting agents to real tools (MCP servers, clients, transports)",
+        "Files (reading, writing, scoped directory access)",
+        "APIs (wrapping REST endpoints as tools)",
+        "CLIs and SDKs (shelling out safely, vendor SDKs)",
+        "Notion, email, and other business systems",
+        "Security (least privilege for agents, prompt injection, audit trails)",
+        "Intune, Autopilot, and device provisioning",
+        "Exchange Online and email security (SPF/DKIM/DMARC, Defender for Office)",
+        "Patch and update management (Update rings, Autopatch, third-party)",
+        "SharePoint and OneDrive administration",
+        "File, print, and storage services (DFS, FSRM, Universal Print)",
+        "Firewalls, VPN, and edge security",
+        "Incident response (lifecycle, containment, postmortems)",
+        "Cloud identity hardening (PIM, break-glass, legacy auth blocking)",
+        "Switching, wireless, and LAN infrastructure (VLANs, 802.1X/RADIUS)",
+        "Routing, NAT, and packet analysis (Wireshark)",
+        "DHCP and IP address management",
+        "RMM platform depth and automation engineering (Graph API, webhooks)",
+        "Compliance frameworks (CIS Controls, NIST CSF, cyber insurance, audits)",
+        "Advanced PowerShell scripting (modules, error handling, remoting)"
+      ],
+      "lab": "Build or configure an MCP server that connects an agent to one real system you use daily, with scoped permissions and a full audit log.",
+      "startDate": "2027-08-02",
+      "endDate": "2027-08-08",
+      "artifact": "MCP server exposing the inventory DB and docs — scoped permissions, full audit log",
+      "dependsOn": [
+        35,
+        51
+      ],
+      "tooling": {
+        "standsUp": "MCP server",
+        "freeOption": "MCP SDKs (open source), Claude Code",
+        "trial": null,
+        "paidFallback": "—"
+      }
+    }
+  ]
+}

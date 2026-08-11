@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/login/github",
+      "rewrite": "/.auth/login/github"
+    },
+    {
+      "route": "/login/microsoft",
+      "rewrite": "/.auth/login/aad"
+    },
+    {
+      "route": "/logout",
+      "rewrite": "/.auth/logout"
+    },
+    {
+      "route": "/.auth/login/twitter",
+      "statusCode": 404
+    }
+  ],
+
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/data/*", "/*.{png,svg,ico,webmanifest}"]
+  },
+
+  "responseOverrides": {
+    "401": {
+      "redirect": "/",
+      "statusCode": 302
+    }
+  },
+
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+
+  "platform": {
+    "apiRuntime": "node:20"
+  }
+}

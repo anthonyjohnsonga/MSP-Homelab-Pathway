@@ -1,0 +1,10 @@
+# Normalise line endings. Authored on Windows, built on Linux CI — without this
+# every file churns between CRLF and LF and diffs become unreadable.
+* text=auto eol=lf
+
+# Binary formats git must not try to normalise.
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.pdf  binary
+*.xlsx binary

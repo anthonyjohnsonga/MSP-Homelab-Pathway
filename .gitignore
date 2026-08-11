@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# Secrets. Nothing in this section may ever be committed.
+#
+# This repo is public and it teaches Secrets Management in Week 37, so it has
+# to model what it teaches. Connection strings, deployment tokens and OAuth
+# secrets live in Azure app settings and GitHub Actions secrets — never here.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+local.settings.json
+appsettings.*.json
+.azure/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Azure Functions local runtime
+api/bin/
+api/obj/
+.func/
+
+# Editors
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# LibreOffice / Excel lock files
+.~lock.*#
+~$*
