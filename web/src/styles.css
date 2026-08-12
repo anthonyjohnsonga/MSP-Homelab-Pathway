@@ -1,0 +1,374 @@
+/*
+ * One stylesheet, plain CSS, no framework.
+ *
+ * The brief asks for something a sysadmin can extend by Week 20 of the course.
+ * Custom properties and a couple of grid rules are learnable in an afternoon;
+ * a utility framework is another vocabulary to learn before changing a colour.
+ */
+
+:root {
+  --bg: #fbfbfa;
+  --surface: #ffffff;
+  --surface-alt: #f4f4f1;
+  --text: #1a1a18;
+  --muted: #6b6b66;
+  --border: #e3e2dd;
+  --accent: #2563eb;
+  --accent-soft: #e8efff;
+  --green: #15803d;
+  --amber: #b45309;
+  --amber-soft: #fef3c7;
+
+  --radius: 8px;
+  --gap: 1rem;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16161a;
+    --surface: #1e1e24;
+    --surface-alt: #26262e;
+    --text: #e8e8e6;
+    --muted: #9a9a96;
+    --border: #32323c;
+    --accent: #7aa2f7;
+    --accent-soft: #232b3d;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --amber-soft: #2e2617;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.25;
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* ---------- layout ------------------------------------------------------ */
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+}
+
+.masthead {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.masthead h1 {
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+}
+
+.masthead p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- current week banner ----------------------------------------- */
+
+.banner {
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  align-items: baseline;
+}
+
+.banner strong {
+  font-size: 1.05rem;
+}
+
+.banner .banner-topic {
+  color: var(--muted);
+}
+
+.banner .banner-meta {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- week list --------------------------------------------------- */
+
+.phase-group {
+  margin-bottom: 1.4rem;
+}
+
+.phase-heading {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+  font-weight: 600;
+}
+
+.week-row {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr auto;
+  gap: 0.6rem;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.week-row:hover {
+  background: var(--surface-alt);
+}
+
+.week-row[aria-current='true'] {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+.week-row.is-now {
+  font-weight: 600;
+}
+
+.week-row .num {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+.week-row .dates {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.now-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+/* ---------- week detail -------------------------------------------------- */
+
+.detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.detail-eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.detail h2 {
+  font-size: 1.5rem;
+  margin: 0.3rem 0 0.4rem;
+  letter-spacing: -0.015em;
+}
+
+.detail-dates {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.section {
+  margin-top: 1.6rem;
+}
+
+.section > h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 0.55rem;
+  font-weight: 600;
+}
+
+.concepts {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.concepts li {
+  margin-bottom: 0.25rem;
+}
+
+.callout {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface-alt);
+  padding: 0.8rem 1rem;
+}
+
+.callout.artifact {
+  border-left-color: var(--green);
+}
+
+.callout p {
+  margin: 0;
+}
+
+.callout .callout-note {
+  margin-top: 0.5rem;
+  font-size: 0.83rem;
+  color: var(--muted);
+}
+
+/* ---------- dependencies ------------------------------------------------- */
+
+.dep-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.dep-chip {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.dep-chip:hover {
+  border-color: var(--accent);
+}
+
+.dep-chip .dep-num {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- tooling ladder ----------------------------------------------- */
+
+.ladder {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.rung {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  align-items: start;
+}
+
+.rung-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding-top: 0.15rem;
+}
+
+.rung.free .rung-label { color: var(--green); }
+.rung.trial .rung-label { color: var(--amber); }
+.rung.paid .rung-label { color: var(--muted); }
+
+.rung-body p {
+  margin: 0;
+}
+
+.rung-detail {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.3rem !important;
+}
+
+.trial-duration {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.checked-on {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.stale-flag {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  font-weight: 600;
+}
+
+/* ---------- misc ---------------------------------------------------------- */
+
+.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.footnote {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--muted);
+}

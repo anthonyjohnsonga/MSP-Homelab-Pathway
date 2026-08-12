@@ -37,7 +37,7 @@ describe('structural rejections', () => {
   });
 
   it('rejects a missing schemaVersion', () => {
-    const c = clone(makeCurriculum()) as Record<string, unknown>;
+    const c = clone(makeCurriculum()) as unknown as Record<string, unknown>;
     delete c.schemaVersion;
     assert.ok(hasCode(c, 'schema_version'));
   });
