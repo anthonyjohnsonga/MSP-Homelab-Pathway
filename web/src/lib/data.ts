@@ -10,7 +10,7 @@
  */
 
 import curriculumData from '@data/curriculum.json';
-import { loadCurriculum } from '@shared/index.ts';
+import { loadCurriculum } from '@pathway/shared';
 
 export const curriculum = loadCurriculum(curriculumData);
 

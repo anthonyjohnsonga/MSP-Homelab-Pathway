@@ -13,9 +13,8 @@
     "erasableSyntaxOnly": true,
     "types": ["vite/client", "node"],
     "paths": {
-      "@data/*": ["../data/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@data/*": ["../data/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts", "vite.config.ts"]
 }

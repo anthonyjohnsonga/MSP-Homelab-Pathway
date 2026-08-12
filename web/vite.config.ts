@@ -9,10 +9,10 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      // The curriculum and the shared layer live outside web/, so they get
-      // explicit aliases rather than a forest of ../../ imports.
+      // Only the curriculum data needs an alias. @pathway/shared is a real
+      // workspace dependency, so Node and Vite both resolve it the same way —
+      // which is what lets code in web/ be unit tested outside a browser.
       '@data': fileURLToPath(new URL('../data', import.meta.url)),
-      '@shared': fileURLToPath(new URL('../shared/src', import.meta.url)),
     },
   },
 

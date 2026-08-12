@@ -372,3 +372,224 @@ a {
   font-size: 0.82rem;
   color: var(--muted);
 }
+
+.alert {
+  background: var(--amber-soft);
+  border: 1px solid var(--amber);
+  color: var(--amber);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- year and phase progress -------------------------------------- */
+
+.year-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--green);
+  transition: width 180ms ease-out;
+}
+
+.year-progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.phase-count {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-bar {
+  height: 3px;
+  background: var(--surface-alt);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.45rem;
+}
+
+.phase-bar-fill {
+  height: 100%;
+  background: var(--green);
+  transition: width 180ms ease-out;
+}
+
+/* ---------- pace badge ---------------------------------------------------- */
+
+.pace {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid currentcolor;
+}
+
+.pace-on { color: var(--green); }
+.pace-ahead { color: var(--accent); }
+.pace-behind { color: var(--amber); }
+
+.week-jump {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- status markers ------------------------------------------------ */
+
+.week-topic {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.status-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  align-self: center;
+}
+
+.status-dot.status-not_started { background: transparent; }
+.status-dot.status-in_progress { background: var(--amber); border-color: var(--amber); }
+.status-dot.status-complete    { background: var(--green); border-color: var(--green); }
+.status-dot.status-skipped     { background: var(--muted); border-color: var(--muted); opacity: 0.5; }
+
+/* ---------- progress controls --------------------------------------------- */
+
+.progress-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.1rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.segment {
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.segment:last-child {
+  border-right: none;
+}
+
+.segment:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.segment[aria-pressed='true'] {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.segment[aria-pressed='true'].status-complete { box-shadow: inset 0 -2px 0 var(--green); }
+.segment[aria-pressed='true'].status-in_progress { box-shadow: inset 0 -2px 0 var(--amber); }
+.segment[aria-pressed='true'].status-skipped { box-shadow: inset 0 -2px 0 var(--muted); }
+
+.hours {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.hours input {
+  width: 5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hours input:focus-visible,
+.note textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- note editor ---------------------------------------------------- */
+
+.note textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.note-status {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+.save-error {
+  color: var(--amber);
+  font-weight: 600;
+}

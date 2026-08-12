@@ -1,11 +1,12 @@
 /**
  * One week in full: what you learn, what you build, what must land in the repo,
- * and how to get the tools without paying.
+ * how to get the tools without paying, and what you recorded against it.
  */
 
-import type { Curriculum, Week } from '@shared/index.ts';
-import { daysBetween, getWeek, parseISODate } from '@shared/index.ts';
+import type { Curriculum, ProgressStore, Week, WeekProgress, WeekStatus } from '@pathway/shared';
+import { daysBetween, getWeek, parseISODate } from '@pathway/shared';
 import { dateRange, stripCode } from '../lib/data.ts';
+import { HoursInput, NoteEditor, StatusControl } from './ProgressControls.tsx';
 
 /** Past this, a trial's terms are old enough that we say so out loud. */
 const STALE_AFTER_DAYS = 180;
@@ -14,10 +15,23 @@ interface Props {
   curriculum: Curriculum;
   week: Week;
   now: Date;
+  progress: WeekProgress | undefined;
+  store: ProgressStore;
   onSelectWeek: (week: number) => void;
+  onStatusChange: (week: number, status: WeekStatus) => void;
+  onHoursChange: (week: number, hours: number | null) => void;
 }
 
-export function WeekDetail({ curriculum, week, now, onSelectWeek }: Props) {
+export function WeekDetail({
+  curriculum,
+  week,
+  now,
+  progress,
+  store,
+  onSelectWeek,
+  onStatusChange,
+  onHoursChange,
+}: Props) {
   const { tooling } = week;
   const hasPaid = tooling.paidFallback.trim() !== '' && tooling.paidFallback.trim() !== '—';
 
@@ -28,6 +42,17 @@ export function WeekDetail({ curriculum, week, now, onSelectWeek }: Props) {
         Week {week.week} — {week.topic}
       </h2>
       <div className="detail-dates">{dateRange(week.startDate, week.endDate)}</div>
+
+      <div className="progress-row">
+        <StatusControl
+          value={progress?.status ?? 'not_started'}
+          onChange={(status) => onStatusChange(week.week, status)}
+        />
+        <HoursInput
+          value={progress?.hours ?? null}
+          onChange={(hours) => onHoursChange(week.week, hours)}
+        />
+      </div>
 
       <section className="section">
         <h3>Concepts</h3>
@@ -120,13 +145,16 @@ export function WeekDetail({ curriculum, week, now, onSelectWeek }: Props) {
               <div className="rung-label">Paid</div>
               <div className="rung-body">
                 <p>{tooling.paidFallback}</p>
-                <p className="rung-detail">
-                  Only if free and trial genuinely fall short.
-                </p>
+                <p className="rung-detail">Only if free and trial genuinely fall short.</p>
               </div>
             </div>
           )}
         </div>
+      </section>
+
+      <section className="section">
+        <h3>Your note</h3>
+        <NoteEditor week={week.week} store={store} />
       </section>
     </article>
   );
@@ -151,7 +179,12 @@ function TrialFreshness({ checkedOn, now }: { checkedOn?: string; now: Date }) {
   return (
     <span className="checked-on">
       Checked {checkedOn}
-      {stale && <> · <span className="stale-flag">verify before relying on this</span></>}
+      {stale && (
+        <>
+          {' '}
+          · <span className="stale-flag">verify before relying on this</span>
+        </>
+      )}
     </span>
   );
 }

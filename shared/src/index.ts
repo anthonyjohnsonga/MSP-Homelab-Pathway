@@ -32,6 +32,9 @@ export {
 export type { Issue, IssueLevel } from './validate.ts';
 export { errorsOnly, formatIssue, validateCurriculum } from './validate.ts';
 
+export type { Identity, ProgressStore, WeekNote } from './store.ts';
+export { emptyProgress, InMemoryProgressStore } from './store.ts';
+
 export {
   addDays,
   daysBetween,
