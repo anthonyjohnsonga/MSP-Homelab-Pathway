@@ -114,6 +114,42 @@ No network and no Azure account required for local development. The frontend rea
 
 ---
 
+## The `msp-lab` CLI
+
+The second deliverable. It scaffolds a technician's lab repo and enforces the artifact rule mechanically, so "no artifact, no completion" survives contact with a bad week.
+
+```bash
+msp-lab init             # scaffold docs/, scripts/, app/, infra/, ai/, README, .gitignore
+msp-lab week start 17    # concepts, lab, artifact, and a note stub
+msp-lab week check 17    # verify the artifact and every dependency
+msp-lab week attest 24   # claim a week that names no file
+msp-lab status           # where you are, what is outstanding, what is blocking
+msp-lab doctor           # git hygiene and a scan for committed credentials
+```
+
+**It never touches the network.** It has to run as a pre-commit hook, in CI, and inside a lab VM with no route out — so it reads the local filesystem and local git only.
+
+Exit codes are the contract, which is what makes it usable in a hook:
+
+| Code | Meaning |
+|---|---|
+| `0` | Everything checked passed |
+| `1` | A check failed — missing artifact, unfinished dependency, secret found |
+| `2` | Bad usage — unknown command, week number out of range |
+
+```bash
+# .git/hooks/pre-commit
+msp-lab doctor || exit 1
+```
+
+Three rules keep it honest:
+
+- **An empty file or directory does not count.** `init` leaves `.gitkeep` files and `week check` ignores them, so scaffolding can never pass as completed work.
+- **Completion is derived from artifacts existing**, not from a status someone set. There is no way to mark a week done that doesn't involve the work being there.
+- **The 16 weeks that name no file** are attested with `week attest`, recorded in `.msp-lab/attested.json` inside the repo so the claim is part of the history and reviewable like anything else.
+
+---
+
 ## The curriculum data
 
 `data/curriculum.json` is the source of truth, and the Markdown it came from lives in `docs/curriculum-source/`.

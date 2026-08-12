@@ -57,8 +57,24 @@ jobs:
       - name: Typecheck shared
         run: npm run build --workspace @pathway/shared
 
+      - name: Typecheck cli
+        run: npm run build --workspace @pathway/cli
+
       - name: Build web
         run: npm run build --workspace @pathway/web
+
+      - name: Smoke test the CLI
+        # Scaffold a throwaway repo and prove the artifact rule actually bites:
+        # a fresh scaffold must fail, and pass only once the file exists.
+        run: |
+          mkdir -p /tmp/smoke && cd /tmp/smoke && git init -q
+          node "$GITHUB_WORKSPACE/cli/src/index.ts" init --repo /tmp/smoke
+          if node "$GITHUB_WORKSPACE/cli/src/index.ts" week check 1 --repo /tmp/smoke; then
+            echo "::error::week check 1 passed on an empty scaffold"
+            exit 1
+          fi
+          echo "# Hardware" > /tmp/smoke/docs/lab/hardware.md
+          node "$GITHUB_WORKSPACE/cli/src/index.ts" week check 1 --repo /tmp/smoke
 
       - name: Assert no secrets in the built bundle
         # Cheap backstop for the rule that this repo carries no secrets. Not a

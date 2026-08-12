@@ -1,0 +1,26 @@
+{
+  "name": "@pathway/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "msp-lab — scaffold and verify a technician's lab repo.",
+  "license": "MIT",
+  "author": "anthonyjohnsonga",
+  "type": "module",
+  "bin": {
+    "msp-lab": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pathway/shared": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  }
+}
