@@ -593,3 +593,187 @@ a {
   color: var(--amber);
   font-weight: 600;
 }
+
+/* ---------- dependency warning -------------------------------------------- */
+
+.dep-warning {
+  margin-top: 1.1rem;
+  border: 1px solid var(--amber);
+  border-left: 4px solid var(--amber);
+  background: var(--amber-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.85rem 1.05rem;
+}
+
+.dep-warning-head {
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 0.4rem;
+}
+
+.dep-warning-list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+}
+
+.dep-warning-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dep-warning-note {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+/* ---------- repo link ------------------------------------------------------ */
+
+.repo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.repo-link label {
+  color: var(--muted);
+}
+
+.repo-link input {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  min-width: 15rem;
+}
+
+.repo-link button,
+.artifact-actions button {
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.repo-link button:hover:not(:disabled),
+.artifact-actions button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.artifact-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.artifact-actions button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.link-button {
+  background: none !important;
+  border: none !important;
+  color: var(--muted) !important;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem !important;
+  padding: 0 !important;
+}
+
+/* ---------- artifact panel -------------------------------------------------- */
+
+.artifact-panel {
+  margin-top: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  background: var(--surface-alt);
+}
+
+.artifact-targets-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.artifact-targets ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.artifact-targets code {
+  font-size: 0.86rem;
+}
+
+.target-kind {
+  margin-left: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.artifact-note {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.artifact-status {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+}
+
+.artifact-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  padding: 0.12rem 0.45rem;
+  border: 1px solid currentcolor;
+}
+
+.badge-verified { color: var(--green); }
+.badge-attested { color: var(--amber); }
+.badge-none { color: var(--muted); }
+
+.artifact-detail {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.artifact-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.artifact-mark {
+  margin-right: 0.3rem;
+  font-weight: 700;
+}
+
+.artifact-mark.is-verified { color: var(--green); }
+.artifact-mark.is-attested { color: var(--amber); }

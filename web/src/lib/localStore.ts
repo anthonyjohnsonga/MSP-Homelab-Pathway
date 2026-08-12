@@ -9,14 +9,25 @@
  * one tech's work, and so the local keys line up with the Azure partition key.
  */
 
-import type { Identity, ProgressStore, WeekNote, WeekProgress, WeekStatus } from '@pathway/shared';
+import type {
+  ArtifactCheck,
+  Identity,
+  ProgressStore,
+  RepoRef,
+  WeekNote,
+  WeekProgress,
+  WeekStatus,
+} from '@pathway/shared';
 import { emptyProgress } from '@pathway/shared';
 
 /** Bump if the stored shape ever changes incompatibly. */
 const SCHEMA = 'v1';
 
+type Kind = 'progress' | 'notes' | 'checks' | 'repo';
+
 type ProgressMap = Record<string, WeekProgress>;
 type NoteMap = Record<string, WeekNote>;
+type CheckMap = Record<string, ArtifactCheck>;
 
 /**
  * localStorage throws rather than returning null in some privacy modes, and
@@ -54,11 +65,11 @@ export class LocalProgressStore implements ProgressStore {
     return this.storage !== null;
   }
 
-  private key(kind: 'progress' | 'notes'): string {
+  private key(kind: Kind): string {
     return `pathway:${SCHEMA}:${this.identity.orgId}:${this.identity.userId}:${kind}`;
   }
 
-  private read<T>(kind: 'progress' | 'notes'): T {
+  private read<T>(kind: Kind): T {
     const key = this.key(kind);
     // Memory is checked first and wins when present: a previous write may have
     // fallen back to it after a quota failure, in which case it holds newer
@@ -74,7 +85,7 @@ export class LocalProgressStore implements ProgressStore {
     }
   }
 
-  private write(kind: 'progress' | 'notes', value: unknown): void {
+  private write(kind: Kind, value: unknown): void {
     const key = this.key(kind);
     const raw = JSON.stringify(value);
     if (this.storage) {
@@ -137,6 +148,36 @@ export class LocalProgressStore implements ProgressStore {
 
   async listNotes(): Promise<WeekNote[]> {
     const map = this.read<NoteMap>('notes');
+    return Object.values(map).sort((a, b) => a.week - b.week);
+  }
+
+  async getRepoLink(): Promise<RepoRef | null> {
+    const stored = this.read<{ repo?: RepoRef }>('repo');
+    return stored.repo ?? null;
+  }
+
+  async setRepoLink(repo: RepoRef | null): Promise<void> {
+    this.write('repo', repo === null ? {} : { repo });
+    if (repo === null) {
+      // Checks were made against the old repo, so they say nothing about the
+      // new one. Keeping them would show green ticks earned somewhere else.
+      this.write('checks', {});
+    }
+  }
+
+  async getArtifactCheck(week: number): Promise<ArtifactCheck | null> {
+    return this.read<CheckMap>('checks')[String(week)] ?? null;
+  }
+
+  async setArtifactCheck(check: ArtifactCheck): Promise<ArtifactCheck> {
+    const map = this.read<CheckMap>('checks');
+    map[String(check.week)] = check;
+    this.write('checks', map);
+    return check;
+  }
+
+  async listArtifactChecks(): Promise<ArtifactCheck[]> {
+    const map = this.read<CheckMap>('checks');
     return Object.values(map).sort((a, b) => a.week - b.week);
   }
 }

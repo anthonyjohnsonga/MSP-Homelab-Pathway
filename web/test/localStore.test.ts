@@ -132,6 +132,40 @@ describe('notes', () => {
   });
 });
 
+describe('repo link and artifact checks', () => {
+  it('survives a reload', async () => {
+    await newStore().setRepoLink({ owner: 'atech', name: 'msp-lab' });
+    assert.deepEqual(await newStore().getRepoLink(), { owner: 'atech', name: 'msp-lab' });
+  });
+
+  it('persists a verified check', async () => {
+    await newStore().setArtifactCheck({
+      week: 1,
+      source: 'verified',
+      found: true,
+      path: 'docs/lab/hardware.md',
+      commitSha: 'abc123',
+      checkedAt: '2026-08-10T00:00:00.000Z',
+    });
+    const check = await newStore().getArtifactCheck(1);
+    assert.equal(check?.commitSha, 'abc123');
+    assert.equal(check?.source, 'verified');
+  });
+
+  it('discards checks when the repo is unlinked, across a reload', async () => {
+    const store = newStore();
+    await store.setRepoLink({ owner: 'atech', name: 'msp-lab' });
+    await store.setArtifactCheck({
+      week: 1,
+      source: 'verified',
+      found: true,
+      checkedAt: '2026-08-10T00:00:00.000Z',
+    });
+    await store.setRepoLink(null);
+    assert.deepEqual(await newStore().listArtifactChecks(), []);
+  });
+});
+
 describe('browser failure modes', () => {
   it('falls back to memory when localStorage is unavailable entirely', async () => {
     (globalThis as { window?: unknown }).window = {

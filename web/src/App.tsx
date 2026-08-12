@@ -1,13 +1,22 @@
 import { useMemo, useState } from 'react';
 
-import { calendarPosition, getWeek, pace, today, weekCount } from '@pathway/shared';
+import {
+  calendarPosition,
+  getWeek,
+  pace,
+  today,
+  unmetDependencies,
+  weekCount,
+} from '@pathway/shared';
 import { curriculum } from './lib/data.ts';
 import { LOCAL_IDENTITY, LocalProgressStore } from './lib/localStore.ts';
 import { useProgress } from './lib/useProgress.ts';
+import { useArtifacts } from './lib/useArtifacts.ts';
 import { CurrentWeekBanner } from './components/CurrentWeekBanner.tsx';
 import { WeekList } from './components/WeekList.tsx';
 import { WeekDetail } from './components/WeekDetail.tsx';
 import { YearProgress } from './components/ProgressControls.tsx';
+import { RepoLink } from './components/ArtifactPanel.tsx';
 
 export function App() {
   // Evaluated once per mount. The current week only changes at midnight, and a
@@ -18,7 +27,8 @@ export function App() {
   // is a change to this line and nothing else.
   const store = useMemo(() => new LocalProgressStore(LOCAL_IDENTITY), []);
 
-  const { progress, loading, error, setStatus, setHours } = useProgress(store);
+  const { progress, loading, error, setStatus, setHours, isComplete } = useProgress(store);
+  const artifacts = useArtifacts(store, curriculum);
 
   const currentWeek = useMemo(() => {
     const position = calendarPosition(curriculum, now);
@@ -31,6 +41,11 @@ export function App() {
   const weekProgress = progress.find((p) => p.week === selectedWeek);
   const yourPace = pace(curriculum, progress, now);
 
+  const unmet = useMemo(
+    () => (week ? unmetDependencies(curriculum, week.week, isComplete) : []),
+    [week, isComplete],
+  );
+
   return (
     <div className="app">
       <header className="masthead">
@@ -40,12 +55,16 @@ export function App() {
           {curriculum.client.name}, {curriculum.client.staff} staff across{' '}
           {curriculum.client.sites} sites
         </p>
-        {!loading && (
-          <YearProgress progress={progress} totalWeeks={weekCount(curriculum)} />
-        )}
+        {!loading && <YearProgress progress={progress} totalWeeks={weekCount(curriculum)} />}
+        <RepoLink
+          repo={artifacts.repo}
+          onLink={artifacts.linkRepo}
+          onUnlink={artifacts.unlinkRepo}
+        />
       </header>
 
       {error && <div className="alert">{error}</div>}
+      {artifacts.error && <div className="alert">{artifacts.error}</div>}
 
       {!store.isPersistent && (
         <div className="alert">
@@ -65,6 +84,7 @@ export function App() {
         <WeekList
           curriculum={curriculum}
           progress={progress}
+          checks={artifacts.checks}
           selectedWeek={selectedWeek}
           currentWeek={currentWeek}
           onSelectWeek={setSelectedWeek}
@@ -77,9 +97,16 @@ export function App() {
             now={now}
             progress={weekProgress}
             store={store}
+            unmetDependencies={unmet}
+            repo={artifacts.repo}
+            artifactCheck={artifacts.checks.get(week.week)}
+            verifying={artifacts.verifying === week.week}
             onSelectWeek={setSelectedWeek}
             onStatusChange={setStatus}
             onHoursChange={setHours}
+            onVerify={(w) => void artifacts.verify(w)}
+            onAttest={(w) => void artifacts.attest(w)}
+            onClearCheck={(w) => void artifacts.clearCheck(w)}
           />
         ) : (
           <p className="empty">Week {selectedWeek} is not in this curriculum.</p>
@@ -87,8 +114,9 @@ export function App() {
       </div>
 
       <footer className="footnote">
-        Progress is stored in this browser only. Sign-in, dependency warnings and
-        artifact verification are still to come — see the roadmap in CLAUDE.md.
+        Progress is stored in this browser only. Verification reads public repos
+        directly from GitHub, so it is rate limited; private repos need the
+        hosted version.
       </footer>
     </div>
   );

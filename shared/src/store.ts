@@ -15,7 +15,8 @@
  * None of this data ever enters the repo.
  */
 
-import type { WeekProgress, WeekStatus } from './types.ts';
+import type { ArtifactCheck, WeekProgress, WeekStatus } from './types.ts';
+import type { RepoRef } from './github.ts';
 
 /**
  * Who the progress belongs to.
@@ -56,6 +57,18 @@ export interface ProgressStore {
 
   /** Every note the tech has written, for export and for search. */
   listNotes(): Promise<WeekNote[]>;
+
+  /** The tech's own msp-lab repo, once they have linked it. */
+  getRepoLink(): Promise<RepoRef | null>;
+
+  /** Pass null to unlink. */
+  setRepoLink(repo: RepoRef | null): Promise<void>;
+
+  getArtifactCheck(week: number): Promise<ArtifactCheck | null>;
+
+  setArtifactCheck(check: ArtifactCheck): Promise<ArtifactCheck>;
+
+  listArtifactChecks(): Promise<ArtifactCheck[]>;
 }
 
 /** A blank record for a week that has not been touched yet. */
@@ -72,6 +85,8 @@ export class InMemoryProgressStore implements ProgressStore {
 
   private readonly progress = new Map<number, WeekProgress>();
   private readonly notes = new Map<number, WeekNote>();
+  private readonly checks = new Map<number, ArtifactCheck>();
+  private repoLink: RepoRef | null = null;
   private readonly now: () => string;
 
   constructor(identity: Identity, now: () => string = () => new Date().toISOString()) {
@@ -119,5 +134,31 @@ export class InMemoryProgressStore implements ProgressStore {
 
   async listNotes(): Promise<WeekNote[]> {
     return [...this.notes.values()].sort((a, b) => a.week - b.week);
+  }
+
+  async getRepoLink(): Promise<RepoRef | null> {
+    return this.repoLink;
+  }
+
+  async setRepoLink(repo: RepoRef | null): Promise<void> {
+    this.repoLink = repo;
+    if (repo === null) {
+      // Checks were made against the old repo, so they say nothing about the
+      // new one. Keeping them would show green ticks earned somewhere else.
+      this.checks.clear();
+    }
+  }
+
+  async getArtifactCheck(week: number): Promise<ArtifactCheck | null> {
+    return this.checks.get(week) ?? null;
+  }
+
+  async setArtifactCheck(check: ArtifactCheck): Promise<ArtifactCheck> {
+    this.checks.set(check.week, check);
+    return check;
+  }
+
+  async listArtifactChecks(): Promise<ArtifactCheck[]> {
+    return [...this.checks.values()].sort((a, b) => a.week - b.week);
   }
 }

@@ -68,6 +68,16 @@ export interface Week {
   endDate: string;
   /** What must land in the tech's repo before the week counts as complete. */
   artifact: string;
+  /**
+   * Explicit repo paths that satisfy this week, overriding whatever can be
+   * parsed out of `artifact`.
+   *
+   * Roughly a third of the curriculum describes an outcome rather than a file
+   * ("Defender onboarded across the fleet"), so those weeks cannot be checked
+   * automatically unless a path is stated here. A trailing slash means the
+   * target is a directory.
+   */
+  verifyPaths?: string[];
   /** Week numbers that must be complete first. Always strictly earlier. */
   dependsOn: number[];
   tooling: Tooling;

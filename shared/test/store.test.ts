@@ -159,3 +159,87 @@ describe('notes', () => {
     assert.deepEqual(await store.listProgress(), []);
   });
 });
+
+describe('repo link', () => {
+  it('starts unlinked', async () => {
+    assert.equal(await store.getRepoLink(), null);
+  });
+
+  it('round-trips a repo', async () => {
+    await store.setRepoLink({ owner: 'atech', name: 'msp-lab' });
+    assert.deepEqual(await store.getRepoLink(), { owner: 'atech', name: 'msp-lab' });
+  });
+
+  it('can be unlinked', async () => {
+    await store.setRepoLink({ owner: 'atech', name: 'msp-lab' });
+    await store.setRepoLink(null);
+    assert.equal(await store.getRepoLink(), null);
+  });
+
+  it('discards artifact checks when the repo is unlinked', async () => {
+    // Checks were earned against the old repo. Carrying them over would show
+    // green ticks for work that is not in the repo now linked.
+    await store.setRepoLink({ owner: 'atech', name: 'msp-lab' });
+    await store.setArtifactCheck({
+      week: 1,
+      source: 'verified',
+      found: true,
+      path: 'docs/lab/hardware.md',
+      checkedAt: '2026-08-10T00:00:00.000Z',
+    });
+    await store.setRepoLink(null);
+    assert.deepEqual(await store.listArtifactChecks(), []);
+  });
+});
+
+describe('artifact checks', () => {
+  it('starts with none recorded', async () => {
+    assert.equal(await store.getArtifactCheck(1), null);
+  });
+
+  it('round-trips a verified check with its sha', async () => {
+    await store.setArtifactCheck({
+      week: 1,
+      source: 'verified',
+      found: true,
+      path: 'docs/lab/hardware.md',
+      commitSha: 'abc123',
+      checkedAt: '2026-08-10T00:00:00.000Z',
+    });
+    const check = await store.getArtifactCheck(1);
+    assert.equal(check?.source, 'verified');
+    assert.equal(check?.commitSha, 'abc123');
+  });
+
+  it('keeps attested separate from verified', async () => {
+    await store.setArtifactCheck({
+      week: 2,
+      source: 'attested',
+      found: true,
+      checkedAt: '2026-08-10T00:00:00.000Z',
+    });
+    // The distinction is the whole point: attested must never read as verified.
+    assert.equal((await store.getArtifactCheck(2))?.source, 'attested');
+  });
+
+  it('replaces an earlier check for the same week', async () => {
+    const base = { week: 3, found: false, checkedAt: '2026-08-10T00:00:00.000Z' } as const;
+    await store.setArtifactCheck({ ...base, source: 'attested' });
+    await store.setArtifactCheck({ ...base, source: 'verified', found: true });
+    const checks = await store.listArtifactChecks();
+    assert.equal(checks.length, 1);
+    assert.equal(checks[0]?.source, 'verified');
+  });
+
+  it('lists checks in week order', async () => {
+    for (const week of [9, 2, 5]) {
+      await store.setArtifactCheck({
+        week,
+        source: 'attested',
+        found: true,
+        checkedAt: '2026-08-10T00:00:00.000Z',
+      });
+    }
+    assert.deepEqual((await store.listArtifactChecks()).map((c) => c.week), [2, 5, 9]);
+  });
+});

@@ -3,10 +3,20 @@
  * how to get the tools without paying, and what you recorded against it.
  */
 
-import type { Curriculum, ProgressStore, Week, WeekProgress, WeekStatus } from '@pathway/shared';
+import type {
+  ArtifactCheck,
+  Curriculum,
+  ProgressStore,
+  RepoRef,
+  Week,
+  WeekProgress,
+  WeekStatus,
+} from '@pathway/shared';
 import { daysBetween, getWeek, parseISODate } from '@pathway/shared';
 import { dateRange, stripCode } from '../lib/data.ts';
 import { HoursInput, NoteEditor, StatusControl } from './ProgressControls.tsx';
+import { DependencyWarning } from './DependencyWarning.tsx';
+import { ArtifactPanel } from './ArtifactPanel.tsx';
 
 /** Past this, a trial's terms are old enough that we say so out loud. */
 const STALE_AFTER_DAYS = 180;
@@ -17,9 +27,16 @@ interface Props {
   now: Date;
   progress: WeekProgress | undefined;
   store: ProgressStore;
+  unmetDependencies: Week[];
+  repo: RepoRef | null;
+  artifactCheck: ArtifactCheck | undefined;
+  verifying: boolean;
   onSelectWeek: (week: number) => void;
   onStatusChange: (week: number, status: WeekStatus) => void;
   onHoursChange: (week: number, hours: number | null) => void;
+  onVerify: (week: Week) => void;
+  onAttest: (week: Week) => void;
+  onClearCheck: (week: Week) => void;
 }
 
 export function WeekDetail({
@@ -28,9 +45,16 @@ export function WeekDetail({
   now,
   progress,
   store,
+  unmetDependencies,
+  repo,
+  artifactCheck,
+  verifying,
   onSelectWeek,
   onStatusChange,
   onHoursChange,
+  onVerify,
+  onAttest,
+  onClearCheck,
 }: Props) {
   const { tooling } = week;
   const hasPaid = tooling.paidFallback.trim() !== '' && tooling.paidFallback.trim() !== '—';
@@ -42,6 +66,12 @@ export function WeekDetail({
         Week {week.week} — {week.topic}
       </h2>
       <div className="detail-dates">{dateRange(week.startDate, week.endDate)}</div>
+
+      <DependencyWarning
+        week={week}
+        unmet={unmetDependencies}
+        onSelectWeek={onSelectWeek}
+      />
 
       <div className="progress-row">
         <StatusControl
@@ -78,6 +108,16 @@ export function WeekDetail({
             This week is not complete until this exists in your <code>msp-lab</code> repo.
           </p>
         </div>
+        <ArtifactPanel
+          week={week}
+          curriculum={curriculum}
+          repo={repo}
+          check={artifactCheck}
+          verifying={verifying}
+          onVerify={() => onVerify(week)}
+          onAttest={() => onAttest(week)}
+          onClear={() => onClearCheck(week)}
+        />
       </section>
 
       <section className="section">

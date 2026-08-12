@@ -35,6 +35,18 @@ export { errorsOnly, formatIssue, validateCurriculum } from './validate.ts';
 export type { Identity, ProgressStore, WeekNote } from './store.ts';
 export { emptyProgress, InMemoryProgressStore } from './store.ts';
 
+export type { ArtifactTarget } from './artifacts.ts';
+export { artifactTargets, isVerifiable, verifiableCoverage } from './artifacts.ts';
+
+export type {
+  FetchLike,
+  GitHubClientOptions,
+  RepoRef,
+  VerifyOutcome,
+  VerifyWeekResult,
+} from './github.ts';
+export { GitHubArtifactChecker, parseRepoRef } from './github.ts';
+
 export {
   addDays,
   daysBetween,

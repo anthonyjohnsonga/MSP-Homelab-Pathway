@@ -3,7 +3,7 @@
  * marker on each row.
  */
 
-import type { Curriculum, WeekProgress, WeekStatus } from '@pathway/shared';
+import type { ArtifactCheck, Curriculum, WeekProgress, WeekStatus } from '@pathway/shared';
 import { completionByPhase, weeksByPhase } from '@pathway/shared';
 import { shortDate } from '../lib/data.ts';
 
@@ -17,6 +17,7 @@ const STATUS_TITLES: Record<WeekStatus, string> = {
 interface Props {
   curriculum: Curriculum;
   progress: WeekProgress[];
+  checks: Map<number, ArtifactCheck>;
   selectedWeek: number;
   currentWeek: number | null;
   onSelectWeek: (week: number) => void;
@@ -25,6 +26,7 @@ interface Props {
 export function WeekList({
   curriculum,
   progress,
+  checks,
   selectedWeek,
   currentWeek,
   onSelectWeek,
@@ -78,7 +80,10 @@ export function WeekList({
                     {isNow && <span className="now-dot" aria-hidden="true" />}
                     {week.topic}
                   </span>
-                  <span className="dates">{shortDate(week.startDate)}</span>
+                  <span className="dates">
+                    <ArtifactMark check={checks.get(week.week)} />
+                    {shortDate(week.startDate)}
+                  </span>
                 </button>
               );
             })}
@@ -86,5 +91,24 @@ export function WeekList({
         );
       })}
     </nav>
+  );
+}
+
+/**
+ * A tick for a week whose artifact is confirmed present, and a hollow mark for
+ * one that is only self-reported. The two must stay visibly different — that
+ * distinction is the point of the whole mechanic.
+ */
+function ArtifactMark({ check }: { check: ArtifactCheck | undefined }) {
+  if (!check?.found) return null;
+  const verified = check.source === 'verified';
+  return (
+    <span
+      className={`artifact-mark ${verified ? 'is-verified' : 'is-attested'}`}
+      title={verified ? 'Artifact verified in your repo' : 'Self-reported, not verified'}
+      aria-label={verified ? 'Artifact verified' : 'Artifact self-reported'}
+    >
+      {verified ? '✓' : '○'}
+    </span>
   );
 }
