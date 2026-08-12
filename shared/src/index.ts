@@ -35,6 +35,15 @@ export { errorsOnly, formatIssue, validateCurriculum } from './validate.ts';
 export type { Identity, ProgressStore, WeekNote } from './store.ts';
 export { emptyProgress, InMemoryProgressStore } from './store.ts';
 
+export type { CostSummary, CostTier, WeekCost } from './cost.ts';
+export {
+  costSummary,
+  priceHint,
+  staleTrials,
+  TRIAL_STALE_AFTER_DAYS,
+  weekCost,
+} from './cost.ts';
+
 export type { ArtifactTarget } from './artifacts.ts';
 export { artifactTargets, isVerifiable, verifiableCoverage } from './artifacts.ts';
 

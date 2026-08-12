@@ -17,6 +17,9 @@ import { WeekList } from './components/WeekList.tsx';
 import { WeekDetail } from './components/WeekDetail.tsx';
 import { YearProgress } from './components/ProgressControls.tsx';
 import { RepoLink } from './components/ArtifactPanel.tsx';
+import { CostView } from './components/CostView.tsx';
+
+type View = 'weeks' | 'cost';
 
 export function App() {
   // Evaluated once per mount. The current week only changes at midnight, and a
@@ -36,6 +39,13 @@ export function App() {
   }, [now]);
 
   const [selectedWeek, setSelectedWeek] = useState(() => currentWeek ?? 1);
+  const [view, setView] = useState<View>('weeks');
+
+  /** Jumping to a week from the cost view should also bring you back to it. */
+  function goToWeek(week: number) {
+    setSelectedWeek(week);
+    setView('weeks');
+  }
 
   const week = getWeek(curriculum, selectedWeek);
   const weekProgress = progress.find((p) => p.week === selectedWeek);
@@ -61,6 +71,22 @@ export function App() {
           onLink={artifacts.linkRepo}
           onUnlink={artifacts.unlinkRepo}
         />
+        <nav className="view-tabs" aria-label="View">
+          <button
+            className="segment"
+            aria-pressed={view === 'weeks'}
+            onClick={() => setView('weeks')}
+          >
+            Weeks
+          </button>
+          <button
+            className="segment"
+            aria-pressed={view === 'cost'}
+            onClick={() => setView('cost')}
+          >
+            Tools &amp; cost
+          </button>
+        </nav>
       </header>
 
       {error && <div className="alert">{error}</div>}
@@ -77,9 +103,12 @@ export function App() {
         curriculum={curriculum}
         now={now}
         pace={yourPace}
-        onSelectWeek={setSelectedWeek}
+        onSelectWeek={goToWeek}
       />
 
+      {view === 'cost' ? (
+        <CostView curriculum={curriculum} now={now} onSelectWeek={goToWeek} />
+      ) : (
       <div className="columns">
         <WeekList
           curriculum={curriculum}
@@ -112,6 +141,7 @@ export function App() {
           <p className="empty">Week {selectedWeek} is not in this curriculum.</p>
         )}
       </div>
+      )}
 
       <footer className="footnote">
         Progress is stored in this browser only. Verification reads public repos

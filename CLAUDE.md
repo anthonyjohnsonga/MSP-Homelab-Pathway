@@ -125,6 +125,14 @@ Both public and private repos can reach *verified*:
 
 Private-repo support is deliberate: MSP employers frequently forbid public repos, and a tech who can't go public shouldn't be stuck at amber forever.
 
+### Coverage is 36 of 52 weeks, on purpose
+
+Paths are extracted from the artifact prose. Sixteen weeks — **17, 19, 20, 24, 28, 29, 30, 33, 34, 37, 39, 40, 41, 43, 50, 52** — describe an outcome rather than a file ("Defender onboarded across the fleet"), so they are **attest-only and stay that way**. Decided 2026-08-11.
+
+Do **not** close this gap by inventing paths. A guessed path marks real work as missing, which is worse than a week that is honestly self-reported. The extractor deliberately ignores tokens like `NG-DC01` for the same reason.
+
+A `verifyPaths` field on a week overrides the prose and exists for the day this decision is revisited. It is currently unused, and that is the correct state.
+
 **The GitHub App private key is a secret and gets treated like one.** It lives in Azure app settings or Key Vault, never in this repo, never in an environment file that could be committed. Installation access tokens are short-lived — mint them per request, never persist them. Scope the App to repository contents, read-only, and nothing else.
 
 Dependency warnings use the same data: opening Week 39 when Week 32 is incomplete must say so prominently.
