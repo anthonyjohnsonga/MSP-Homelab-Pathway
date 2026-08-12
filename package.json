@@ -22,6 +22,6 @@
     "build": "npm run build --workspace @pathway/shared && npm run build --workspace @pathway/web"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.18.0"
   }
 }
